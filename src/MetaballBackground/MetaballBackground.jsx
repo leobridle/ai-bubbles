@@ -49,7 +49,7 @@ const MetaballPass = ({ metaballsRef, resolution, threshold, metaballCount, rend
   
   const uniformsRef = useRef({
     u_resolution: { value: new THREE.Vector2() },
-    u_metaballs: { value: new Float32Array(30) },
+    u_metaballs: { value: new Float32Array(72) },
     u_metaballCount: { value: 0 },
     u_threshold: { value: 1.0 }
   });
@@ -85,10 +85,10 @@ const MetaballPass = ({ metaballsRef, resolution, threshold, metaballCount, rend
 
     // Prepare metaball data
     const metaballs = metaballsRef.current;
-    const metaballData = new Float32Array(30);
+    const metaballData = new Float32Array(72);
     if (metaballs && metaballs.length > 0) {
       metaballs.forEach((ball, i) => {
-        if (i < 10 && ball) {
+        if (i < 24 && ball) {
           metaballData[i * 3] = ball.x * resolution.x;
           metaballData[i * 3 + 1] = ball.y * resolution.y;
           metaballData[i * 3 + 2] = ball.radius;

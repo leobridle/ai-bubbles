@@ -168,7 +168,7 @@ const DebugPanel = ({
         <input
           type="range"
           min="1"
-          max="10"
+          max="24"
           step="1"
           value={metaballCount}
           onChange={(e) => handleChange('metaballCount', parseInt(e.target.value))}
