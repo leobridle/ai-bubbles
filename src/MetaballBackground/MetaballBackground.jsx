@@ -14,23 +14,19 @@ import DebugPanel from './DebugPanel';
 // Background gradient mesh
 const BackgroundMesh = ({ color1, color2 }) => {
   const { viewport } = useThree();
-  const uniforms = useMemo(() => {
-    const bgColor1 = hexToRgb(color1);
-    const bgColor2 = hexToRgb(color2);
-    return {
-      u_color1: { value: bgColor1 ? new THREE.Vector3(bgColor1.r, bgColor1.g, bgColor1.b) : new THREE.Vector3(0, 0.75, 1) },
-      u_color2: { value: bgColor2 ? new THREE.Vector3(bgColor2.r, bgColor2.g, bgColor2.b) : new THREE.Vector3(0.66, 0.33, 1) }
-    };
-  }, [color1, color2]);
+  const uniformsRef = useRef({
+    u_color1: { value: new THREE.Vector3(0, 0.75, 1) },
+    u_color2: { value: new THREE.Vector3(0.66, 0.33, 1) }
+  });
 
   useEffect(() => {
     const bgColor1 = hexToRgb(color1);
     const bgColor2 = hexToRgb(color2);
     if (bgColor1 && bgColor2) {
-      uniforms.u_color1.value.set(bgColor1.r, bgColor1.g, bgColor1.b);
-      uniforms.u_color2.value.set(bgColor2.r, bgColor2.g, bgColor2.b);
+      uniformsRef.current.u_color1.value.set(bgColor1.r, bgColor1.g, bgColor1.b);
+      uniformsRef.current.u_color2.value.set(bgColor2.r, bgColor2.g, bgColor2.b);
     }
-  }, [color1, color2, uniforms]);
+  }, [color1, color2]);
 
   return (
     <mesh position={[0, 0, 0]} scale={[viewport.width, viewport.height, 1]}>
@@ -38,7 +34,7 @@ const BackgroundMesh = ({ color1, color2 }) => {
       <shaderMaterial
         vertexShader={backgroundVertexShader}
         fragmentShader={backgroundFragmentShader}
-        uniforms={uniforms}
+        uniforms={uniformsRef.current}
       />
     </mesh>
   );
