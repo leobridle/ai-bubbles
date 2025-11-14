@@ -15,7 +15,7 @@ precision highp float;
 varying vec2 v_texCoord;
 
 uniform vec2 u_resolution;
-uniform float u_metaballs[12]; // x, y, radius for up to 4 metaballs (3 floats each)
+uniform float u_metaballs[30]; // x, y, radius for up to 10 metaballs (3 floats each)
 uniform int u_metaballCount;
 uniform float u_threshold;
 
@@ -54,6 +54,54 @@ void main() {
     float radius3 = u_metaballs[11];
     float dist3 = distance(coord, center3);
     sum += (radius3 * radius3) / (dist3 * dist3 + 0.0001);
+  }
+  
+  // Metaball 4
+  if (u_metaballCount > 4) {
+    vec2 center4 = vec2(u_metaballs[12], u_metaballs[13]);
+    float radius4 = u_metaballs[14];
+    float dist4 = distance(coord, center4);
+    sum += (radius4 * radius4) / (dist4 * dist4 + 0.0001);
+  }
+  
+  // Metaball 5
+  if (u_metaballCount > 5) {
+    vec2 center5 = vec2(u_metaballs[15], u_metaballs[16]);
+    float radius5 = u_metaballs[17];
+    float dist5 = distance(coord, center5);
+    sum += (radius5 * radius5) / (dist5 * dist5 + 0.0001);
+  }
+  
+  // Metaball 6
+  if (u_metaballCount > 6) {
+    vec2 center6 = vec2(u_metaballs[18], u_metaballs[19]);
+    float radius6 = u_metaballs[20];
+    float dist6 = distance(coord, center6);
+    sum += (radius6 * radius6) / (dist6 * dist6 + 0.0001);
+  }
+  
+  // Metaball 7
+  if (u_metaballCount > 7) {
+    vec2 center7 = vec2(u_metaballs[21], u_metaballs[22]);
+    float radius7 = u_metaballs[23];
+    float dist7 = distance(coord, center7);
+    sum += (radius7 * radius7) / (dist7 * dist7 + 0.0001);
+  }
+  
+  // Metaball 8
+  if (u_metaballCount > 8) {
+    vec2 center8 = vec2(u_metaballs[24], u_metaballs[25]);
+    float radius8 = u_metaballs[26];
+    float dist8 = distance(coord, center8);
+    sum += (radius8 * radius8) / (dist8 * dist8 + 0.0001);
+  }
+  
+  // Metaball 9
+  if (u_metaballCount > 9) {
+    vec2 center9 = vec2(u_metaballs[27], u_metaballs[28]);
+    float radius9 = u_metaballs[29];
+    float dist9 = distance(coord, center9);
+    sum += (radius9 * radius9) / (dist9 * dist9 + 0.0001);
   }
   
   // Apply threshold with completely hard edge (no glow/halo at all)

@@ -202,29 +202,37 @@ const MetaballBackground = forwardRef(({
       const metaballs = metaballsRef.current;
       const speed = currentSpeedRef.current;
       const time = performance.now() * 0.001 * speed;
+      const props = renderPropsRef.current;
+      
+      // Calculate buffer zone based on max radius (in normalized coordinates)
+      // Metaballs can affect pixels up to their radius away, so we need to keep them
+      // active until they're far enough that they can't affect visible area
+      const maxRadiusNormalized = (props.maxSize / 1920); // Normalize to 0-1 space (height is 1920)
+      const bufferZone = maxRadiusNormalized * 2; // Double the radius for safety margin
+      const wrapTop = 1.0 + bufferZone; // Wrap when this far above screen
+      const wrapBottom = -bufferZone; // Wrap when this far below screen
 
       metaballs.forEach((ball) => {
         // Organic motion using sine/cosine
         ball.x += Math.sin(time * 0.5 + ball.phase) * 0.0001 * speed;
         ball.y += ball.vy * speed;
         
-        // Wrap around edges smoothly
+        // Wrap around horizontal edges smoothly (with buffer)
         if (ball.x < -0.1) {
           ball.x = 1.1;
         } else if (ball.x > 1.1) {
           ball.x = -0.1;
         }
         
-        // Smooth wrap at bottom - keep x position and radius to avoid jumps
-        if (ball.y > 1.1) {
-          ball.y = -0.1;
+        // Only wrap when metaball is far enough off-screen that it can't affect visible connections
+        if (ball.y > wrapTop) {
+          ball.y = wrapBottom;
           // Keep the same x position to maintain continuity
           // Only randomize if it's way off screen
           if (ball.x < -0.2 || ball.x > 1.2) {
             ball.x = Math.random();
           }
           // Keep the same radius to avoid size jumps
-          // The radius will naturally vary as balls move and merge
         }
       });
     };
@@ -246,10 +254,10 @@ const MetaballBackground = forwardRef(({
         const height = canvas.height;
         const props = renderPropsRef.current;
 
-        // Prepare metaball data array
-        const metaballData = new Float32Array(12);
+        // Prepare metaball data array (up to 10 metaballs)
+        const metaballData = new Float32Array(30);
         metaballs.forEach((ball, i) => {
-          if (i < 4) {
+          if (i < 10) {
             metaballData[i * 3] = ball.x * width;
             metaballData[i * 3 + 1] = ball.y * height;
             metaballData[i * 3 + 2] = ball.radius;
@@ -274,7 +282,7 @@ const MetaballBackground = forwardRef(({
         // Set uniforms
         gl.uniform2f(gl.getUniformLocation(metaballProgram, 'u_resolution'), width, height);
         gl.uniform1fv(gl.getUniformLocation(metaballProgram, 'u_metaballs'), metaballData);
-        gl.uniform1i(gl.getUniformLocation(metaballProgram, 'u_metaballCount'), Math.min(props.metaballCount, 4));
+        gl.uniform1i(gl.getUniformLocation(metaballProgram, 'u_metaballCount'), Math.min(props.metaballCount, 10));
         gl.uniform1f(gl.getUniformLocation(metaballProgram, 'u_threshold'), props.threshold);
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -368,9 +376,12 @@ const MetaballBackground = forwardRef(({
         });
       }
     } else if (currentCount > targetCount) {
-      // Remove excess metaballs - prefer removing ones that are off-screen
-      const visible = metaballsRef.current.filter(ball => ball.y >= -0.1 && ball.y <= 1.1);
-      const offScreen = metaballsRef.current.filter(ball => ball.y < -0.1 || ball.y > 1.1);
+      // Remove excess metaballs - prefer removing ones that are far off-screen
+      // Use a larger buffer to identify truly off-screen metaballs
+      const maxRadiusNormalized = (props.maxSize / 1920);
+      const bufferZone = maxRadiusNormalized * 3; // Even larger buffer for removal logic
+      const visible = metaballsRef.current.filter(ball => ball.y >= -bufferZone && ball.y <= 1.0 + bufferZone);
+      const offScreen = metaballsRef.current.filter(ball => ball.y < -bufferZone || ball.y > 1.0 + bufferZone);
       
       // Keep visible ones, then add off-screen ones until we reach target
       const toKeep = Math.min(targetCount, visible.length);
