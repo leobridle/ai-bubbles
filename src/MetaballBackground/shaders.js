@@ -1,11 +1,10 @@
-// Vertex shader for metaball rendering
+// Vertex shader for metaball rendering (Three.js compatible)
 export const metaballVertexShader = `
-attribute vec2 a_position;
 varying vec2 v_texCoord;
 
 void main() {
-  v_texCoord = a_position * 0.5 + 0.5;
-  gl_Position = vec4(a_position, 0.0, 1.0);
+  v_texCoord = (position.xy + 1.0) * 0.5;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `;
 
@@ -105,7 +104,9 @@ void main() {
   }
   
   // Apply threshold with completely hard edge (no glow/halo at all)
-  float value = step(u_threshold, sum);
+  // Invert threshold so higher value = more merging/bigger metaballs
+  float invertedThreshold = 4.0 - u_threshold;
+  float value = step(invertedThreshold, sum);
   
   gl_FragColor = vec4(vec3(value), 1.0);
 }
@@ -121,27 +122,24 @@ uniform vec3 u_color1; // top color (RGB 0-1)
 uniform vec3 u_color2; // bottom color (RGB 0-1)
 
 void main() {
-  float grayscale = texture2D(u_texture, v_texCoord).r;
+  float mask = texture2D(u_texture, v_texCoord).r;
   
   // Apply gradient map based on Y position
   float gradientPos = v_texCoord.y;
   vec3 gradientColor = mix(u_color1, u_color2, gradientPos);
   
-  // Apply the gradient color based on grayscale intensity
-  vec3 finalColor = gradientColor * grayscale;
-  
-  gl_FragColor = vec4(finalColor, grayscale); // use grayscale as alpha
+  // Use mask as pure alpha - no color multiplication for crisp edges
+  gl_FragColor = vec4(gradientColor, mask);
 }
 `;
 
 // Vertex shader for background gradient
 export const backgroundVertexShader = `
-attribute vec2 a_position;
 varying vec2 v_texCoord;
 
 void main() {
-  v_texCoord = a_position * 0.5 + 0.5;
-  gl_Position = vec4(a_position, 0.0, 1.0);
+  v_texCoord = (position.xy + 1.0) * 0.5;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `;
 
@@ -159,4 +157,3 @@ void main() {
   gl_FragColor = vec4(color, 1.0);
 }
 `;
-

@@ -180,9 +180,9 @@ const DebugPanel = ({
         <label style={labelStyle}>Min Size: {minSize}px</label>
         <input
           type="range"
-          min="10"
-          max="1000"
-          step="10"
+          min="20"
+          max="500"
+          step="5"
           value={minSize}
           onChange={(e) => handleChange('minSize', parseInt(e.target.value))}
           style={sliderStyle}
@@ -193,9 +193,9 @@ const DebugPanel = ({
         <label style={labelStyle}>Max Size: {maxSize}px</label>
         <input
           type="range"
-          min="100"
-          max="2000"
-          step="10"
+          min="50"
+          max="800"
+          step="5"
           value={maxSize}
           onChange={(e) => handleChange('maxSize', parseInt(e.target.value))}
           style={sliderStyle}
@@ -203,11 +203,16 @@ const DebugPanel = ({
       </div>
 
       <div style={inputGroupStyle}>
-        <label style={labelStyle}>Threshold: {threshold.toFixed(2)}</label>
+        <label style={labelStyle}>
+          Merge Amount: {threshold.toFixed(2)}
+          <span style={{ fontSize: '10px', display: 'block', color: '#718096', marginTop: '2px' }}>
+            Higher = more merging/bigger metaballs
+          </span>
+        </label>
         <input
           type="range"
-          min="0.0"
-          max="2.0"
+          min="0.5"
+          max="3.0"
           step="0.01"
           value={threshold}
           onChange={(e) => handleChange('threshold', parseFloat(e.target.value))}
