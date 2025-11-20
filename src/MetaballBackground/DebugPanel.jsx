@@ -52,7 +52,9 @@ const DebugPanel = ({
     fontSize: '14px',
     zIndex: 1000,
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
-    transition: 'all 0.3s ease'
+    transition: 'all 0.3s ease',
+    userSelect: 'text',
+    WebkitUserSelect: 'text'
   };
 
   const headerStyle = {

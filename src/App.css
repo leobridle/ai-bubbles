@@ -6,6 +6,9 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .content-overlay {

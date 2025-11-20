@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import MetaballBackground from './MetaballBackground/MetaballBackground';
+import InteractiveBackground from './InteractiveBackground';
 import './App.css';
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <MetaballBackground
+      <InteractiveBackground
         ref={bgRef}
         color1="#00bfff"
         color2="#a855f7"
@@ -24,6 +24,7 @@ function App() {
         maxSize={250}
         threshold={2.2}
         showDebugPanel={true}
+        showParticleControls={true}
       />
     </div>
   );
