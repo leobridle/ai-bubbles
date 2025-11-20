@@ -19,7 +19,7 @@ const ParticleSystem = forwardRef(({
   // Load bubble image
   useEffect(() => {
     const img = new Image();
-    img.src = '/src/Bubble.png';
+    img.src = '/Bubble.png';
     img.onload = () => {
       bubbleImageRef.current = img;
       imageLoadedRef.current = true;
